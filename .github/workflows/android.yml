@@ -1,0 +1,43 @@
+name: Build Android
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
+
+permissions:
+  contents: write
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 1
+
+      - name: Set up Zig
+        uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: 0.16.0
+
+      - name: Build for Android (ARM64)
+        run: |
+          # Zig natively cross-compiles by specifying target architecture and OS
+          zig build --release=fast -Dtarget=aarch64-linux-android --prefix dist
+
+      - name: Verify Binary
+        run: |
+          ls -lh dist/bin/
+          file dist/bin/*
+
+      - name: Upload Android Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pawnocchio-android-arm64
+          path: dist/bin/*
