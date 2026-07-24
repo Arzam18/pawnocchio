@@ -26,10 +26,10 @@ jobs:
         with:
           version: 0.16.0
 
-      - name: Build for Android (ARM64)
+      - name: Build for Android / ARM64 (Musl Static)
         run: |
-          # Zig natively cross-compiles by specifying target architecture and OS
-          zig build --release=fast -Dtarget=aarch64-linux-android --prefix dist
+          # Use aarch64-linux-musl so Zig can natively provide libc without requiring the Android NDK
+          zig build --release=fast -Dtarget=aarch64-linux-musl --prefix dist
 
       - name: Verify Binary
         run: |
